@@ -1,0 +1,62 @@
+import openai
+import time
+
+# 设置 OpenAI API 密钥
+openai.api_key = ""
+
+# 定义模拟两个角色之间的对话的函数
+def simulate_chat(model, character1, character2):
+    # 初始化聊天历史记录列表 
+    chat_history = []
+    
+    # 初始化角色人物性格字典 
+    personalities = {
+        character1: "勇敢的英雄",
+        character2: "无辜的村民",
+    }
+     
+     # 初始化角色记忆字典 
+     memories = {
+         character1: "",
+         character2: "",
+     }
+      
+     # 开始对话循环 
+     while True:
+         # 创建对话提示语句 
+         prompt = f"{personalities[character1]}: {memories[character1]}\n{personalities[character2]}: {memories[character2]}"
+           
+         # 构建请求参数
+         data = {
+             'model': gpt-3.5-turbo,
+             'prompt': prompt,
+             'temperature': 0.5,
+             'max_tokens': 1024,
+          }
+            
+          if len(chat_history) > 0:
+              data['previous_response'] = chat_history[-1]
+              
+          response_data = {"role": "", "content": ""}
+            
+          try:
+              response_text = openai.Completion.create(**data).choices[0].text.strip()
+              response_data["role"] = character2
+              response_data["content"] = response_text
+          except Exception as e:
+              print(e)
+              response_data["role"] = character2
+              response_data["content"] = "I'm sorry, I cannot generate a proper response at the moment."
+            
+         # 将响应添加到聊天历史记录列表中 
+         chat_history.append(response_data)
+         # 打印响应
+         print(f"{response_data['role']}: {response_data['content']}")
+         # 更新角色记忆字典
+         memories[character1] = response_text.strip()
+         memories[character2] = response_text.strip()
+        # 等待5秒钟
+        time.sleep(5)
+
+# 模拟勇敢的英雄和无辜的村民之间的对话
+simulate_chat("davinci", "勇敢的英雄", "无辜的村民")
